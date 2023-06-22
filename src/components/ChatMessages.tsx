@@ -43,7 +43,7 @@ const ChatMessages: FC<ChatMessagesProps> = ({className, ...props}) => {
     content: {
         deltaFormat: [
             {
-                insert: `${text}`,
+                insert: text,
             },
         ],
     },
@@ -51,31 +51,13 @@ const ChatMessages: FC<ChatMessagesProps> = ({className, ...props}) => {
 
 
 const handleAddToDoc = (addMessage: string) => {    
-   
-    const textBlockContent = textBlockObject(addMessage).content;
     monday
-    .api(`mutation {
-create_doc_block(doc_id: ${docId}, type: normal_text, content: "${JSON.stringify(textBlockContent).replaceAll('"', '\\"')}") {
-id,
-content
-}
-}`)
-    .then((res) => {
-        console.log("Inserted block via API:", res);
-        monday.execute("notice", {
-            message: 'check the browser console',
-            type: "success", // or "error" (red), or "info" (blue)
-            timeout: 10000,
-        });
+    .execute("addMultiBlocks", {
+        blocks: [
+            textBlockObject(addMessage),
+        ],
     })
-    .catch((err) => {
-        console.log(err)
-        monday.execute("notice", {
-            message: err?.data?.errors?.map((e:any) => e.message).join(', '),
-            type: "error", // or "error" (red), or "info" (blue)
-            timeout: 10000,
-        });
-    });
+    .then((res) => {})
 }
 
 
