@@ -38,7 +38,14 @@ const MarkdownLite = ({ text }: { text: string }) => {
   return (
     <>
       {parts.map((part, i) => (
-        <React.Fragment key={i}>{part}</React.Fragment>
+        typeof part === 'string' ? 
+          <React.Fragment key={i}>{part.split('\n').map((line, index, arr) => (
+            <React.Fragment key={index}>
+              {line}
+              {index < arr.length - 1 && <br />}
+            </React.Fragment>
+          ))}</React.Fragment>
+          : <React.Fragment key={i}>{part}</React.Fragment>
       ))}
     </>
   )
