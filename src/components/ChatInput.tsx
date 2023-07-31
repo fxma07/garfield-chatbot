@@ -1,6 +1,6 @@
 "use client"
 
-import { FC, HTMLAttributes, useContext, useRef, useState } from "react";
+import { FC, HTMLAttributes, useContext, useRef, useState, useEffect } from "react";
 import { cn } from "../lib/utils";
 import TextareaAutosize from "react-textarea-autosize";
 import {useMutation} from '@tanstack/react-query';
@@ -10,19 +10,17 @@ import { MessagesContext } from "@/context/messages";
 import {BiLoaderCircle} from 'react-icons/bi';
 import {BsFillSendFill} from 'react-icons/bs';
 import toast from "react-hot-toast";
+import mondaySdk from 'monday-sdk-js';
+
+
+const monday = mondaySdk();
 
 interface ChatInputProps extends HTMLAttributes<HTMLDivElement>{}
 
 
-
-
-
-
-
 const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
     const [input, setInput] = useState<string>('')
-    const {messages, addMessages, removeMessage, updateMessage, setIsMessageUpdating} = useContext(MessagesContext)   
-
+    const {messages, initialPrompt,  addMessages, removeMessage, updateMessage, setIsMessageUpdating} = useContext(MessagesContext) 
     const textareaRef = useRef<null| HTMLTextAreaElement>(null)
     const {mutate: sendMessage, isLoading} = useMutation({
         mutationFn: async (message: Message) => {
@@ -52,9 +50,7 @@ const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
           }
 
           addMessages(responseMessage)
-
           setIsMessageUpdating(true)
-
 
           const reader = stream.getReader()
           const decoder  = new TextDecoder()
@@ -80,6 +76,36 @@ const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
             textareaRef.current?.focus()
         }
     })
+
+
+    useEffect(()=>{
+
+
+        console.log("triigered"); 
+
+        let process = localStorage.getItem("process"); 
+        if(process){
+            sendMessage({
+                id: nanoid(),
+                isUserMessage: true,
+                text: `Ask me a question on how you can help on my project brief?`
+            });
+        }
+
+    }, [])
+
+    useEffect(()=>{
+
+        let process = localStorage.getItem("process"); 
+        if(! process){
+            let promptId = nanoid();
+            sendMessage({
+                id: promptId,
+                isUserMessage: true,
+                text: initialPrompt
+            });
+        }
+    }, [sendMessage, initialPrompt])
 
     return <div {...props} className={cn('border border-zinc-300 rounded overflow-hidden w-full self-end')}>
         <div className="relative">

@@ -17,3 +17,8 @@ body {
   background: var(--background-primary);
   height: 100%;
 }
+
+input {
+  --tw-ring-shadow: 0 0 #000 !important;
+  font-size: 0.9rem !important;
+}

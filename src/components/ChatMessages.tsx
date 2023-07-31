@@ -25,6 +25,7 @@ const ChatMessages: FC<ChatMessagesProps> = ({className, ...props}) => {
     const [profilePhotoUrl, setProfilePhotoUrl] =  useState<string | null>(null);
     const [context, setContext] = useState<any>(null);
 
+
     useEffect(() => {
         monday.listen("context", (res: any) => {
             setContext(res.data);
@@ -89,7 +90,6 @@ const {mutate: nextQuestion} = useMutation({
       }
 
       addMessages(responseMessage)
-
       setIsMessageUpdating(true)
 
 
@@ -174,41 +174,44 @@ const {mutate: suggestion} = useMutation({
         className
         )}>
             <div className="flex-1 flex-grow"></div>
-            {inverseMessages.map((message) => (
-            <div key={message.id} className="chat-message">
-                    <div className={cn('flex items-center', {'justify-end': message.isUserMessage})}>
-                        <div className={cn('px-2 py-1 rounded flex flex-col space-y-2 text-sm max-w-xs overflow-x-hidden text-left', {
-                            'bg-blue-600 text-white': message.isUserMessage,
-                            'bg-gray-200 text-gray-900': !message.isUserMessage
-                        })}>
-                            <MarkdownLite text={message.text} />
+            {inverseMessages.map((message, index) => (
+
+            inverseMessages.length != (index+1) &&
+
+                <div key={message.id}  className="chat-message">
+                        <div className={cn('flex items-center', {'justify-end': message.isUserMessage})}>
+                            <div className={cn('p-3 rounded flex flex-col space-y-2 text-sm max-w-xs overflow-x-hidden text-left', {
+                                'bg-blue-600 text-white': message.isUserMessage,
+                                'bg-gray-200 text-gray-900': !message.isUserMessage
+                            })}>
+                                <MarkdownLite text={message.text} />
+                            </div>
+                        {message.isUserMessage && profilePhotoUrl && (<Image src={profilePhotoUrl} alt="avatar" className="ml-2 rounded-full" width={42} height={42}/>)}
                         </div>
-                    {message.isUserMessage && profilePhotoUrl && (<Image src={profilePhotoUrl} alt="avatar" className="ml-2 rounded-full" width={42} height={42}/>)}
-                    </div>
-                    {!message.isUserMessage && message.text !== "Let's start making a project brief. Tell me about your project." && (
-                    <div className="flex mt-2 justify-start">
-                        <div onClick={() => handleAddToDoc(message.text)} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
-text-white mr-1 '>Add to Doc<AiOutlinePlus className='ml-1' /></div>
-                     <div onClick={() => {
-                         const currentResponse: Message = {
-                            id: nanoid(),
-                            isUserMessage: true,
-                            text: `Ask me another question.`
-                        }
-                        nextQuestion(currentResponse);
-                     }} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
-text-white mr-1'>Next Question</div>
-                    <div onClick={() => {
-                         const currentResponse: Message = {
-                            id: nanoid(),
-                            isUserMessage: true,
-                            text: `Make a suggestion.`
-                        }
-                        suggestion(currentResponse);
-                    }} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
-                    text-white'>Suggest</div>
-                    </div>
-)}
+                        {!message.isUserMessage && message.text !== "Let's start making a project brief. Tell me about your project." && (
+                        <div className="flex mt-2 justify-start">
+                            <div onClick={() => handleAddToDoc(message.text)} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
+    text-white mr-1 '>Add to Doc<AiOutlinePlus className='ml-1' /></div>
+                        <div onClick={() => {
+                            const currentResponse: Message = {
+                                id: nanoid(),
+                                isUserMessage: true,
+                                text: `Ask me another question.`
+                            }
+                            nextQuestion(currentResponse);
+                        }} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
+    text-white mr-1'>Next Question</div>
+                        <div onClick={() => {
+                            const currentResponse: Message = {
+                                id: nanoid(),
+                                isUserMessage: true,
+                                text: `Make a suggestion.`
+                            }
+                            suggestion(currentResponse);
+                        }} className='flex items-center justify-center text-xs bg-slate-400 cursor-pointer p-1.5 rounded transition duration-200 hover:bg-blue-600 hover:drop-shadow-md
+                        text-white'>Suggest</div>
+                        </div>
+    )}
                 </div>
             ))}
         </div>

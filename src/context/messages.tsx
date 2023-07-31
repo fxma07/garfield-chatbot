@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useState } from "react";
 import { Message } from "../lib/validators/message";
 import { nanoid } from "nanoid";
+import { Prompt } from "next/font/google";
 
 export const MessagesContext = createContext<{
     messages: Message[]
@@ -9,6 +10,8 @@ export const MessagesContext = createContext<{
     removeMessage: (id: string) => void
     updateMessage: (id: string, updateFn: (prevText: string) => string) => void
     setIsMessageUpdating: (isUpdating: boolean) => void 
+    initialPrompt: string 
+    addInitialPrompt: (prompt: string) => void
 }>({
     messages: [],
     isMessageUpdating: false,
@@ -16,17 +19,17 @@ export const MessagesContext = createContext<{
     removeMessage: () => {},
     updateMessage: () => {},
     setIsMessageUpdating: () => {},
+    initialPrompt: "", 
+    addInitialPrompt: () =>{}
 })
 
+
+
 export function MessagesProvider({children}: {children: ReactNode}){
+
     const [isMessageUpdating, setIsMessageUpdating] = useState<boolean>(false)
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: nanoid(),
-            text: `Let's start making a project brief. Tell me about your project.`,
-            isUserMessage: false,
-        }
-    ])
+    const [initialPrompt, setInitailPrompt] = useState<string>("");
+    const [messages, setMessages] = useState<Message[]>([])
 
     const addMessages = (message: Message) => {
         setMessages((prev) => [...prev, message])
@@ -34,6 +37,14 @@ export function MessagesProvider({children}: {children: ReactNode}){
 
     const removeMessage = (id: string) => {
         setMessages((prev) => prev.filter((message) => message.id !== id))
+    }
+
+
+    const addInitialPrompt = (prompt: string) =>{
+
+
+      console.log(prompt)
+      setInitailPrompt(prompt)
     }
 
     const updateMessage = (
@@ -57,6 +68,8 @@ export function MessagesProvider({children}: {children: ReactNode}){
         updateMessage,
         isMessageUpdating,
         setIsMessageUpdating,
+        initialPrompt,
+        addInitialPrompt
    }}>
         {children}
     </MessagesContext.Provider>
