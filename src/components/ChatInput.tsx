@@ -78,33 +78,39 @@ const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
     })
 
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
 
-        console.log("triigered"); 
+    //     let process = localStorage.getItem("process"); 
+    //     if(process){
+    //         sendMessage({
+    //             id: nanoid(),
+    //             isUserMessage: true,
+    //             text: `Ask me a question on how you can help on my project brief?`
+    //         });
+    //     }
 
-        let process = localStorage.getItem("process"); 
-        if(process){
-            sendMessage({
-                id: nanoid(),
-                isUserMessage: true,
-                text: `Ask me a question on how you can help on my project brief?`
-            });
-        }
-
-    }, [])
+    // }, [])
 
     useEffect(()=>{
 
-        let process = localStorage.getItem("process"); 
-        if(! process){
-            let promptId = nanoid();
-            sendMessage({
-                id: promptId,
-                isUserMessage: true,
-                text: initialPrompt
-            });
-        }
+
+        let promptId = nanoid();
+        sendMessage({
+            id: promptId,
+            isUserMessage: true,
+            text: initialPrompt
+        });
+
+        // let process = localStorage.getItem("process"); 
+        // if(! process){
+        //     let promptId = nanoid();
+        //     sendMessage({
+        //         id: promptId,
+        //         isUserMessage: true,
+        //         text: initialPrompt
+        //     });
+        // }
     }, [sendMessage, initialPrompt])
 
     return <div {...props} className={cn('border border-zinc-300 rounded overflow-hidden w-full self-end')}>

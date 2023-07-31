@@ -36,32 +36,34 @@ export const Setup = () => {
 
 
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
 
 
 
-      monday.listen("context", (res: any) => {
-          setContext(res.data);
+    //   monday.listen("context", (res: any) => {
+    //       setContext(res.data);
 
-          let process = localStorage.getItem("process"); 
+    //       let process = localStorage.getItem("process"); 
 
-          if(process){
-            const { docId } = JSON.parse(process);
-            if(docId == res.data.docId){
-              setProcess(false);
-            }
-            else{
-              setProcess(true);
-            }
-          }
+    //       if(process){
+    //         const { docId } = JSON.parse(process);
+    //         if(docId == res.data.docId){
+    //           setProcess(false);
+    //         }
+    //         else{
+    //           setProcess(true);
+    //         }
+    //       }
 
-      });
+    //   });
           
-    }, [])
+    // }, [])
 
 
   const submitInitial =  ()=>{
+
+    localStorage.clear();
 
     let prompt = `Create a proposed outline for the project brief titled ${inputValue} and ${text}, always breaking down the outline into numbered sections. At the end of your response, ask, "Would you like to add or make any changes to this outline? and the start of your response mention 'here's a proposed outline for your project brief':"`
     addInitialPrompt(prompt);
