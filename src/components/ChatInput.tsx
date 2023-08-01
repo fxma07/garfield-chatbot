@@ -22,6 +22,9 @@ const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
     const [input, setInput] = useState<string>('')
     const {messages, initialPrompt,  addMessages, removeMessage, updateMessage, setIsMessageUpdating} = useContext(MessagesContext) 
     const textareaRef = useRef<null| HTMLTextAreaElement>(null)
+    const [context, setContext] = useState<any>(null); 
+
+
     const {mutate: sendMessage, isLoading} = useMutation({
         mutationFn: async (message: Message) => {
             const response = await fetch('/api/message', {
@@ -71,46 +74,60 @@ const ChatInput: FC<ChatInputProps> = ({className, ...props}) => {
           }, 10)
         },
         onError(_, message){
+
+            console.log("error: ",  message);
             toast.error('Something went wrong. Please try again.')
             removeMessage(message.id)
             textareaRef.current?.focus()
         }
     })
 
-
-    // useEffect(()=>{
-
-
-    //     let process = localStorage.getItem("process"); 
-    //     if(process){
-    //         sendMessage({
-    //             id: nanoid(),
-    //             isUserMessage: true,
-    //             text: `Ask me a question on how you can help on my project brief?`
-    //         });
-    //     }
-
-    // }, [])
-
     useEffect(()=>{
+        
+        interface ProcessItem {
+            docId: string;
+            process: boolean;
+          }
 
+        // monday.get("context", (res: any) => {
 
-        let promptId = nanoid();
-        sendMessage({
-            id: promptId,
-            isUserMessage: true,
-            text: initialPrompt
-        });
+            monday.get("context").then(res => {
+              setContext(res.data);
+            
 
-        // let process = localStorage.getItem("process"); 
-        // if(! process){
-        //     let promptId = nanoid();
-        //     sendMessage({
-        //         id: promptId,
-        //         isUserMessage: true,
-        //         text: initialPrompt
-        //     });
-        // }
+            console.log(res.data);
+
+            let processSession = localStorage.getItem("process"); 
+            if(processSession){
+                const processParse: ProcessItem[] =JSON.parse(processSession);
+                const foundItem: ProcessItem | undefined = processParse.find(item => item.docId ===res.data.docId);
+                if (foundItem) {
+                    let promptId = nanoid();
+                    sendMessage({
+                        id: promptId,
+                        isUserMessage: true,
+                        text: "Ask me a question on how you can help me on my project brief"
+                    });
+                    
+                } else {
+                    let promptId = nanoid();
+                    sendMessage({
+                        id: promptId,
+                        isUserMessage: true,
+                        text: initialPrompt
+                    });
+                }
+            }
+            else{
+                let promptId = nanoid();
+                sendMessage({
+                    id: promptId,
+                    isUserMessage: true,
+                    text: initialPrompt
+                });
+            }
+
+        })
     }, [sendMessage, initialPrompt])
 
     return <div {...props} className={cn('border border-zinc-300 rounded overflow-hidden w-full self-end')}>

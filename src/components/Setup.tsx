@@ -36,39 +36,63 @@ export const Setup = () => {
 
 
 
-    // useEffect(()=>{
+    useEffect(()=>{
 
 
+      interface ProcessItem {
+        docId: string;
+        process: boolean;
+      }
+
+      // monday.get("context", (res: any) => {
+        monday.get("context").then(res => {
 
 
-    //   monday.listen("context", (res: any) => {
-    //       setContext(res.data);
+          setContext(res.data);
+          let processSession = localStorage.getItem("process"); 
 
-    //       let process = localStorage.getItem("process"); 
 
-    //       if(process){
-    //         const { docId } = JSON.parse(process);
-    //         if(docId == res.data.docId){
-    //           setProcess(false);
-    //         }
-    //         else{
-    //           setProcess(true);
-    //         }
-    //       }
+          console.log("processSession: ", processSession); 
 
-    //   });
+          if(processSession){
+            const processParse: ProcessItem[] =JSON.parse(processSession);
+            const foundItem: ProcessItem | undefined = processParse.find(item => item.docId === res.data.docId);
+            if (foundItem) {
+              setProcess(false)
+            } else {
+              setProcess(true)
+            }
+          }else{
+            setProcess(true)
+          }
+      });
           
-    // }, [])
+    }, [])
 
 
   const submitInitial =  ()=>{
 
-    localStorage.clear();
-
     let prompt = `Create a proposed outline for the project brief titled ${inputValue} and ${text}, always breaking down the outline into numbered sections. At the end of your response, ask, "Would you like to add or make any changes to this outline? and the start of your response mention 'here's a proposed outline for your project brief':"`
     addInitialPrompt(prompt);
+    
+
+    const processSession = localStorage.getItem("process"); 
+
+
+    if(processSession){
+       let processParse = JSON.parse(processSession); 
+       processParse.push({
+          docId: context.docId, 
+          process: true
+      })
+      localStorage.setItem("process", JSON.stringify(processParse));
+    }
+    else{
+      localStorage.setItem("process", JSON.stringify([{docId: context.docId, process: true}]));
+    }
+
     setProcess(false)
-    localStorage.setItem("process", JSON.stringify({docId: context.docId, process: true}));
+    
     
   }
 
